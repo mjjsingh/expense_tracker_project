@@ -1,4 +1,3 @@
-// form.js
 function submitForm(e) {
     e.preventDefault(); // Prevent form from being submitted
 
@@ -10,6 +9,12 @@ function submitForm(e) {
         method: 'POST',
         body: formData
     })
+    .then(response => response.json())
+    .then(data => {
+        // Display the success message
+        document.getElementById('message').textContent = data.message;
+    })
     .catch(error => console.error('Error:', error));
 }
+
 
