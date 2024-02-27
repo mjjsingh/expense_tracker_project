@@ -4,29 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-    <form action="/user/signup" method="post" style="border: 1px solid #ccc" onsubmit="submitForm(event)">
+    <form id="signupForm" action="/user/signup" method="post" style="border: 1px solid #ccc">
         <div class="container">
             <h1>Sign Up</h1>
             <hr>
             <label for="name"><b>Name</b></label>
-            <input type="text" placeholder="Enter Your Name" name="name" required>
+            <input type="text" placeholder="Enter Your Name" name="name" id="name" autocomplete="name" required>
             <label for="email"><b>Email</b></label>
-            <input type="text" placeholder="Enter Email" name="email" required>
+            <input type="text" placeholder="Enter Email" name="email" id="email" autocomplete="email" required>
             <label for="psw"><b>Password</b></label>
-            <input type="password" placeholder="Enter Password" name="psw" required>
+            <input type="password" placeholder="Enter Password" name="psw" id="psw" autocomplete="current-password" required>
             <div class="clearfix">
                 <button type="button" class="cancelbtn">Cancel</button>
                 <button type="submit" class="signupbtn">Sign Up</button>
             </div>
         </div>
     </form>
-    <script src="form.js"></script>
+    <button id="userButton" onclick="window.location.href='/user/login'">Existing User - Login</button>
+    <script src="signup.js"></script>
 </body>
 </html>
-
-
-
 

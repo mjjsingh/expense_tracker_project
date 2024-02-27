@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <form id="loginForm" action="/user/login" method="post" style="border: 1px solid #ccc">
+        <div class="container">
+            <h1>Login</h1>
+            <hr>
+            <label for="email"><b>Email</b></label>
+            <input type="text" placeholder="Enter Email" name="email" id="email" autocomplete="email" required>
+            <label for="psw"><b>Password</b></label>
+            <input type="password" placeholder="Enter Password" name="psw" id="psw" autocomplete="current-password" required>
+            <div class="clearfix">
+                <button type="button" class="cancelbtn">Cancel</button>
+                <button type="submit" class="loginbtn">Login</button>
+            </div>
+        </div>
+    </form>
+    <button id="userButton" onclick="window.location.href='/user/signup'">New User - Signup Now</button>
+    <script src="login.js"></script>
+</body>
+</html>
+
