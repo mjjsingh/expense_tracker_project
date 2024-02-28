@@ -1,37 +1,41 @@
 //login.js
-function submitLoginForm(e) {
+async function submitLoginForm(e) {
     e.preventDefault(); // Prevent form from being submitted
 
-    // Create a FormData object from the form
-    var formData = new FormData(e.target);
+    // Manually create an object with the form data
+    var formData = {
+        email: document.getElementById('email').value,
+        psw: document.getElementById('psw').value
+    };
 
-    // Log the FormData object
-    for (var pair of formData.entries()) {
-        console.log(pair[0] + ', ' + pair[1]);
-    }
+    try {
+        // Use fetch to send the form data to the server
+        let response = await fetch('/user/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
 
-    // Use fetch to send the form data to the server
-    fetch('/user/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams(formData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
+        let data = await response.json();
+
+        // Display an error message
+        var errorMessage = document.getElementById('errorMessage');
+        if (data.status === 'error') {
+            errorMessage.textContent = data.message;
+        } else {
             alert('User login successful');
+            e.target.reset();
+            errorMessage.textContent = '';
         }
-    })
-    .catch(error => console.error('Error:', error));
+    } catch (error) {
+        console.error('Error:', error);
+    }
 }
 
-// Get the form element
-var loginForm = document.getElementById('loginForm');
-
-// Add an event listener to the form
-loginForm.addEventListener('submit', submitLoginForm);
+// Attach the submitLoginForm function to the form's submit event
+document.getElementById('loginForm').addEventListener('submit', submitLoginForm);
 
 
 
