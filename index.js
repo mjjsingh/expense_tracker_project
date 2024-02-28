@@ -23,6 +23,12 @@ app.post('/user/signup', (req, res) => {
     const name = req.body.name;
     const password = req.body.psw;
 
+    // Check if name, email, or password fields are empty
+    if (!name || !email || !password) {
+        console.log('Name, email, and password fields must not be empty.');
+        return;
+    }
+
     db.query('SELECT * FROM users WHERE email = ?', [email], (err, result) => {
         if (err) throw err;
 
@@ -33,6 +39,29 @@ app.post('/user/signup', (req, res) => {
                 if (err) throw err;
                 res.json({ message: 'User registered successfully', status: 'success' });
             });
+        }
+    });
+});
+
+
+app.post('/user/login', (req, res) => {
+    const email = req.body.email;
+    const password = req.body.psw;
+
+    db.query('SELECT * FROM users WHERE email = ?', [email], (err, result) => {
+        if (err) throw err;
+
+        if (result.length > 0) {
+            if (result[0].password === password) {
+                // User is authenticated successfully
+                console.log(`User with email ${email} authenticated successfully.`);
+            } else {
+                // Password does not match
+                console.log(`Password does not match for the user with email ${email}.`);
+            }
+        } else {
+            // No user with the given email found in the database
+            console.log(`No user found with the email ${email}.`);
         }
     });
 });
