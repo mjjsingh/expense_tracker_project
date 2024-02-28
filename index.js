@@ -58,6 +58,18 @@ app.post('/user/signup', (req, res) => {
     });
 });
 
+app.get('/expenses', (req, res) => {
+    if (req.session.user) { // Check if user is logged in
+        // Fetch expenses from the database
+        db.query('SELECT * FROM expenses WHERE user_id = ?', [req.session.user.id], (err, expenses) => {
+            if (err) throw err;
+            // Send the expenses to the client
+            res.json({ expenses });
+        });
+    } else {
+        res.status(401).json({ status: 'error', message: 'User not authorized.' }); // Send an error status if the user is not logged in
+    }
+});
 app.post('/user/login', (req, res) => {
     const email = req.body.email;
     const password = req.body.psw;
@@ -75,7 +87,7 @@ app.post('/user/login', (req, res) => {
                 } else {
                     console.log(`User with email ${email} authenticated successfully.`);
                     req.session.user = result[0]; // Save user data in session
-                    res.redirect('/expenses'); // Redirect to expenses page
+                    res.redirect('/expenses-page'); // Redirect to expenses page
                 }
             });
         } else {
@@ -86,10 +98,11 @@ app.post('/user/login', (req, res) => {
 });
 
 
+
 // ... rest of your code
 
 // Add a new route for expenses
-app.get('/expenses', (req, res) => {
+app.get('/expenses-page', (req, res) => {
     if (req.session.user) { // Check if user is logged in
         res.sendFile(path.join(__dirname, 'src', 'expense.html'));
     } else {
@@ -97,20 +110,24 @@ app.get('/expenses', (req, res) => {
     }
 });
 
-// Add a new POST route for expenses
+
 app.post('/expenses', (req, res) => {
     if (req.session.user) { // Check if user is logged in
         const { amount, description, category } = req.body;
-
-        // Insert the expense data into the expenses table
         db.query('INSERT INTO expenses (user_id, amount, description, category) VALUES (?, ?, ?, ?)', [req.session.user.id, amount, description, category], (err, result) => {
             if (err) throw err;
-            res.json({ message: 'Expense added successfully', status: 'success' });
+            // Fetch the updated list of expenses
+            db.query('SELECT * FROM expenses WHERE user_id = ?', [req.session.user.id], (err, expenses) => {
+                if (err) throw err;
+                // Send the updated expenses to the client
+                res.json({ message: 'Expense added successfully', status: 'success', expenses });
+            });
         });
     } else {
         res.status(401).json({ status: 'error', message: 'User not authorized.' }); // Send an error status if the user is not logged in
     }
 });
+
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);

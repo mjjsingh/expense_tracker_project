@@ -1,16 +1,17 @@
 //expense.js
-async function submitLoginForm(e) {
+async function submitExpenseForm(e) {
     e.preventDefault(); // Prevent form from being submitted
 
     // Manually create an object with the form data
     var formData = {
-        email: document.getElementById('email').value,
-        psw: document.getElementById('psw').value
+        amount: document.getElementById('amount').value,
+        description: document.getElementById('description').value,
+        category: document.getElementById('category').value
     };
 
     try {
         // Use fetch to send the form data to the server
-        let response = await fetch('/user/login', {
+        let response = await fetch('/expenses', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -19,37 +20,48 @@ async function submitLoginForm(e) {
         });
 
         if (!response.ok) {
-            if (response.status === 401) {
-                alert('User not authorized');
-            } else if (response.status === 404) {
-                alert('User not found');
-            }
+            alert('Error occurred while adding expense');
             return;
         }
 
-        // Check if the response is a redirect
-        if (response.redirected) {
-            // If it's a redirect, reload the page to follow the redirect
-            window.location.href = response.url;
-        } else {
-            // If it's not a redirect, proceed as before
-            let data = await response.json();
+        // If the response is OK, get the updated list of expenses
+        let data = await response.json();
 
-            // Display an error message
-            var errorMessage = document.getElementById('errorMessage');
-            if (data.status === 'error') {
-                errorMessage.textContent = data.message;
-            } else {
-                alert('User login successful');
-                e.target.reset();
-                errorMessage.textContent = '';
-            }
-        }
+        // Display the expenses on the screen
+        displayExpenses(data.expenses);
     } catch (error) {
         console.error('Error:', error);
     }
 }
 
-// Attach the submitLoginForm function to the form's submit event
-document.getElementById('loginForm').addEventListener('submit', submitLoginForm);
+function displayExpenses(expenses) {
+    // Assuming 'expenses' is the id of the div where you want to display the expenses
+    var expensesDiv = document.getElementById('expenses');
+
+    // Clear the div
+    expensesDiv.innerHTML = '';
+
+    // Add each expense to the div
+    expenses.forEach(expense => {
+        var p = document.createElement('p');
+        p.textContent = `Amount: ${expense.amount}, Description: ${expense.description}, Category: ${expense.category}`;
+        expensesDiv.appendChild(p);
+    });
+}
+
+// When the page loads, fetch the expenses from the server and display them
+window.onload = async function() {
+    try {
+        let response = await fetch('/expenses');
+        if (!response.ok) {
+            alert('Error occurred while fetching expenses');
+            console.error('Response status:', response.status);
+            return;
+        }
+        let data = await response.json();
+        displayExpenses(data.expenses);
+    } catch (error) {
+        console.error('Fetch error:', error);
+    }
+};
 

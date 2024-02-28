@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>Daily Expenses</h1>
-    <form id="expenseForm" method="post">
+    <form id="expenseForm" method="post" onsubmit="submitExpenseForm(event)">
         <label for="amount">Amount:</label><br>
         <input type="number" id="amount" name="amount" required><br>
         <label for="description">Description:</label><br>
@@ -27,4 +27,5 @@
     <script src="/expense.js"></script> 
 </body>
 </html>
+
 
