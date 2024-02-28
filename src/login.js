@@ -18,6 +18,15 @@ async function submitLoginForm(e) {
             body: JSON.stringify(formData)
         });
 
+        if (!response.ok) {
+            if (response.status === 401) {
+                alert('User not authorized');
+            } else if (response.status === 404) {
+                alert('User not found');
+            }
+            return;
+        }
+
         let data = await response.json();
 
         // Display an error message
@@ -36,7 +45,6 @@ async function submitLoginForm(e) {
 
 // Attach the submitLoginForm function to the form's submit event
 document.getElementById('loginForm').addEventListener('submit', submitLoginForm);
-
 
 
 

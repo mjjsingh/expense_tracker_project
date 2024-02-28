@@ -58,18 +58,14 @@ app.post('/user/login', (req, res) => {
                 res.json({ status: 'success' }); // Send 'success' status
             } else {
                 console.log(`Password does not match for the user with email ${email}.`);
-                res.json({ status: 'error', message: 'Incorrect password.' });
+                res.json({ status: 'error', message: 'User not authorized-401.' });
             }
         } else {
             console.log(`No user found with the email ${email}.`);
-            res.json({ status: 'error', message: 'Login ID does not exist.' });
+            res.json({ status: 'error', message: 'User not found-404.' });
         }
     });
 });
-
-
-
-
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
