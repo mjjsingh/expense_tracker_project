@@ -8,7 +8,8 @@ const app = express();
 const port = 3000;
 
 app.use(express.static('src'));
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
+
 
 app.get('/user/signup', (req, res) => {
     res.sendFile(path.join(__dirname, 'src', 'signup.html'));
@@ -42,9 +43,9 @@ app.post('/user/signup', (req, res) => {
         }
     });
 });
-
-
 app.post('/user/login', (req, res) => {
+    console.log(req.body); // Add this line
+
     const email = req.body.email;
     const password = req.body.psw;
 
@@ -52,19 +53,26 @@ app.post('/user/login', (req, res) => {
         if (err) throw err;
 
         if (result.length > 0) {
+            // Assuming the password in the database is hashed, 
+            // you should hash the provided password and compare.
+            // Here, we're comparing directly for simplicity.
             if (result[0].password === password) {
                 // User is authenticated successfully
                 console.log(`User with email ${email} authenticated successfully.`);
+                res.json({ status: 'success' }); // Send 'success' status
             } else {
                 // Password does not match
                 console.log(`Password does not match for the user with email ${email}.`);
+                res.json({ status: 'error' });
             }
         } else {
             // No user with the given email found in the database
             console.log(`No user found with the email ${email}.`);
+            res.json({ status: 'error' });
         }
     });
 });
+
 
 
 app.listen(port, () => {
