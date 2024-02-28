@@ -1,4 +1,4 @@
-//login.js
+//expense.js
 async function submitLoginForm(e) {
     e.preventDefault(); // Prevent form from being submitted
 
@@ -52,7 +52,4 @@ async function submitLoginForm(e) {
 
 // Attach the submitLoginForm function to the form's submit event
 document.getElementById('loginForm').addEventListener('submit', submitLoginForm);
-
-
-
 

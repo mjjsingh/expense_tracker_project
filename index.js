@@ -4,14 +4,21 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const db = require('./db/db.js'); // Import the db module
 const bcrypt = require('bcrypt'); // Import bcrypt
+const session = require('express-session'); // Import express-session
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
-
 app.use(express.static('src'));
 app.use(express.urlencoded({ extended: true }));
+
+// Use express-session middleware
+app.use(session({
+    secret: 'your_secret_key',
+    resave: false,
+    saveUninitialized: false
+}));
 
 app.get('/user/signup', (req, res) => {
     res.sendFile(path.join(__dirname, 'src', 'signup.html'));
@@ -67,7 +74,8 @@ app.post('/user/login', (req, res) => {
                     res.status(401).json({ status: 'error', message: 'User not authorized.' });
                 } else {
                     console.log(`User with email ${email} authenticated successfully.`);
-                    res.json({ status: 'success' }); // Send 'success' status
+                    req.session.user = result[0]; // Save user data in session
+                    res.redirect('/expenses'); // Redirect to expenses page
                 }
             });
         } else {
@@ -77,9 +85,38 @@ app.post('/user/login', (req, res) => {
     });
 });
 
+
+// ... rest of your code
+
+// Add a new route for expenses
+app.get('/expenses', (req, res) => {
+    if (req.session.user) { // Check if user is logged in
+        res.sendFile(path.join(__dirname, 'src', 'expense.html'));
+    } else {
+        res.redirect('/user/login'); // Redirect to login page if not logged in
+    }
+});
+
+// Add a new POST route for expenses
+app.post('/expenses', (req, res) => {
+    if (req.session.user) { // Check if user is logged in
+        const { amount, description, category } = req.body;
+
+        // Insert the expense data into the expenses table
+        db.query('INSERT INTO expenses (user_id, amount, description, category) VALUES (?, ?, ?, ?)', [req.session.user.id, amount, description, category], (err, result) => {
+            if (err) throw err;
+            res.json({ message: 'Expense added successfully', status: 'success' });
+        });
+    } else {
+        res.status(401).json({ status: 'error', message: 'User not authorized.' }); // Send an error status if the user is not logged in
+    }
+});
+
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
+
+
 
 
 

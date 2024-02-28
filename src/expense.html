@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Expenses</title>
+</head>
+<body>
+    <h1>Daily Expenses</h1>
+    <form id="expenseForm" method="post">
+        <label for="amount">Amount:</label><br>
+        <input type="number" id="amount" name="amount" required><br>
+        <label for="description">Description:</label><br>
+        <input type="text" id="description" name="description" required><br>
+        <label for="category">Category:</label><br>
+        <select id="category" name="category">
+            <option value="food">Food</option>
+            <option value="petrol">Petrol</option>
+            <option value="salary">Salary</option>
+        </select><br>
+        <input type="submit" value="Submit">
+    </form>
+
+    <!-- Add a new div element where you will display the expenses -->
+    <div id="expenses"></div>
+
+    <script src="/expense.js"></script> 
+</body>
+</html>
+
