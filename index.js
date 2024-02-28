@@ -2,20 +2,16 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
-const db = require('./db/db.js'); // Import the db module
-const bcrypt = require('bcrypt'); // Import bcrypt
-const session = require('express-session'); // Import express-session
-
+const db = require('./db/db.js'); 
+const bcrypt = require('bcrypt'); 
+const session = require('express-session'); 
 const app = express();
 const port = 3000;
-
 app.use(express.json());
 app.use(express.static('src'));
 app.use(express.urlencoded({ extended: true }));
-
-// Use express-session middleware
 app.use(session({
-    secret: 'your_secret_key',
+    secret: '_secret_key',
     resave: false,
     saveUninitialized: false
 }));
@@ -32,14 +28,10 @@ app.post('/user/signup', (req, res) => {
     const email = req.body.email;
     const name = req.body.name;
     const password = req.body.psw;
-
-    // Check if name, email, or password fields are empty
     if (!name || !email || !password) {
         console.log('Name, email, and password fields must not be empty.');
         return;
     }
-
-    // Hash the password
     bcrypt.hash(password, 10, function(err, hash) {
         if (err) throw err;
 
@@ -59,17 +51,16 @@ app.post('/user/signup', (req, res) => {
 });
 
 app.get('/expenses', (req, res) => {
-    if (req.session.user) { // Check if user is logged in
-        // Fetch expenses from the database
+    if (req.session.user) { 
         db.query('SELECT * FROM expenses WHERE user_id = ?', [req.session.user.id], (err, expenses) => {
             if (err) throw err;
-            // Send the expenses to the client
             res.json({ expenses });
         });
     } else {
         res.status(401).json({ status: 'error', message: 'User not authorized.' }); // Send an error status if the user is not logged in
     }
 });
+
 app.post('/user/login', (req, res) => {
     const email = req.body.email;
     const password = req.body.psw;
@@ -86,8 +77,8 @@ app.post('/user/login', (req, res) => {
                     res.status(401).json({ status: 'error', message: 'User not authorized.' });
                 } else {
                     console.log(`User with email ${email} authenticated successfully.`);
-                    req.session.user = result[0]; // Save user data in session
-                    res.redirect('/expenses-page'); // Redirect to expenses page
+                    req.session.user = result[0]; 
+                    res.redirect('/expenses-page'); 
                 }
             });
         } else {
@@ -97,37 +88,43 @@ app.post('/user/login', (req, res) => {
     });
 });
 
-
-
-// ... rest of your code
-
-// Add a new route for expenses
 app.get('/expenses-page', (req, res) => {
-    if (req.session.user) { // Check if user is logged in
+    if (req.session.user) { 
         res.sendFile(path.join(__dirname, 'src', 'expense.html'));
     } else {
-        res.redirect('/user/login'); // Redirect to login page if not logged in
+        res.redirect('/user/login'); 
     }
 });
 
-
 app.post('/expenses', (req, res) => {
-    if (req.session.user) { // Check if user is logged in
+    if (req.session.user) { 
         const { amount, description, category } = req.body;
         db.query('INSERT INTO expenses (user_id, amount, description, category) VALUES (?, ?, ?, ?)', [req.session.user.id, amount, description, category], (err, result) => {
             if (err) throw err;
-            // Fetch the updated list of expenses
             db.query('SELECT * FROM expenses WHERE user_id = ?', [req.session.user.id], (err, expenses) => {
                 if (err) throw err;
-                // Send the updated expenses to the client
                 res.json({ message: 'Expense added successfully', status: 'success', expenses });
             });
         });
     } else {
-        res.status(401).json({ status: 'error', message: 'User not authorized.' }); // Send an error status if the user is not logged in
+        res.status(401).json({ status: 'error', message: 'User not authorized.' });
     }
 });
 
+app.delete('/expenses/:id', (req, res) => {
+    if (req.session.user) {
+        const id = req.params.id;
+        db.query('DELETE FROM expenses WHERE id = ? AND user_id = ?', [id, req.session.user.id], (err, result) => {
+            if (err) throw err;
+            db.query('SELECT * FROM expenses WHERE user_id = ?', [req.session.user.id], (err, expenses) => {
+                if (err) throw err;
+                res.json({ message: 'Expense deleted successfully', status: 'success', expenses });
+            });
+        });
+    } else {
+        res.status(401).json({ status: 'error', message: 'User not authorized.' });
+    }
+});
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);

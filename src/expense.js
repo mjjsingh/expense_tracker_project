@@ -35,18 +35,35 @@ async function submitExpenseForm(e) {
 }
 
 function displayExpenses(expenses) {
-    // Assuming 'expenses' is the id of the div where you want to display the expenses
     var expensesDiv = document.getElementById('expenses');
-
-    // Clear the div
     expensesDiv.innerHTML = '';
-
-    // Add each expense to the div
     expenses.forEach(expense => {
         var p = document.createElement('p');
         p.textContent = `Amount: ${expense.amount}, Description: ${expense.description}, Category: ${expense.category}`;
+        var deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.onclick = function() {
+            deleteExpense(expense.id);
+        };
+        p.appendChild(deleteButton);
         expensesDiv.appendChild(p);
     });
+}
+
+async function deleteExpense(id) {
+    try {
+        let response = await fetch('/expenses/' + id, {
+            method: 'DELETE'
+        });
+        if (!response.ok) {
+            alert('Error occurred while deleting expense');
+            return;
+        }
+        let data = await response.json();
+        displayExpenses(data.expenses);
+    } catch (error) {
+        console.error('Error:', error);
+    }
 }
 
 // When the page loads, fetch the expenses from the server and display them
@@ -64,4 +81,5 @@ window.onload = async function() {
         console.error('Fetch error:', error);
     }
 };
+
 
