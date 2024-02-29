@@ -7,6 +7,8 @@ const jwt = require('jsonwebtoken');
 const db = require('../db/db.js'); 
 const path = require('path');
 
+const secretKey = process.env.SECRET_KEY;
+
 router.get('/signup', (req, res) => {
     res.sendFile(path.join(__dirname, '../src', 'signup.html'));
 });
@@ -57,7 +59,7 @@ router.post('/login', async (req, res) => {
                     res.status(401).json({ status: 'error', message: 'User not authorized.' });
                 } else {
                     console.log(`User with email ${email} authenticated successfully.`);
-                    const token = jwt.sign({ userID: result[0].id }, 'your-secret-key');
+                    const token = jwt.sign({ userID: result[0].id }, secretKey);
                     res.json({ token });
                 }
             });

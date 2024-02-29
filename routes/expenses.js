@@ -5,11 +5,13 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const db = require('../db/db.js'); 
 
+const secretKey = process.env.SECRET_KEY;
+
 router.get('/', async (req, res) => {
     const authHeader = req.headers.authorization;
     if (authHeader) {
         const token = authHeader.split(' ')[1];
-        jwt.verify(token, 'your-secret-key', (err, user) => {
+        jwt.verify(token, secretKey, (err, user) => {
             if (err) {
                 return res.sendStatus(403);
             }
@@ -28,7 +30,7 @@ router.post('/', async (req, res) => {
     const authHeader = req.headers.authorization;
     if (authHeader) {
         const token = authHeader.split(' ')[1];
-        jwt.verify(token, 'your-secret-key', (err, user) => {
+        jwt.verify(token, secretKey, (err, user) => {
             if (err) {
                 return res.sendStatus(403);
             }
@@ -51,7 +53,7 @@ router.delete('/:id', async (req, res) => {
     const authHeader = req.headers.authorization;
     if (authHeader) {
         const token = authHeader.split(' ')[1];
-        jwt.verify(token, 'your-secret-key', (err, user) => {
+        jwt.verify(token, secretKey, (err, user) => {
             if (err) {
                 return res.sendStatus(403);
             }
