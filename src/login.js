@@ -27,24 +27,13 @@ async function submitLoginForm(e) {
             return;
         }
 
-        // Check if the response is a redirect
-        if (response.redirected) {
-            // If it's a redirect, reload the page to follow the redirect
-            window.location.href = response.url;
-        } else {
-            // If it's not a redirect, proceed as before
-            let data = await response.json();
+        // If the response is OK, get the token and store it
+        let data = await response.json();
+        localStorage.setItem('token', data.token);
 
-            // Display an error message
-            var errorMessage = document.getElementById('errorMessage');
-            if (data.status === 'error') {
-                errorMessage.textContent = data.message;
-            } else {
-                alert('User login successful');
-                e.target.reset();
-                errorMessage.textContent = '';
-            }
-        }
+        // Redirect to the expenses page
+        window.location.href = '/expenses-page';
+        e.target.reset();
     } catch (error) {
         console.error('Error:', error);
     }
@@ -52,7 +41,6 @@ async function submitLoginForm(e) {
 
 // Attach the submitLoginForm function to the form's submit event
 document.getElementById('loginForm').addEventListener('submit', submitLoginForm);
-
 
 
 

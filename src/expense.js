@@ -14,7 +14,8 @@ async function submitExpenseForm(e) {
         let response = await fetch('/expenses', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
             },
             body: JSON.stringify(formData)
         });
@@ -29,10 +30,12 @@ async function submitExpenseForm(e) {
 
         // Display the expenses on the screen
         displayExpenses(data.expenses);
+        e.target.reset();
     } catch (error) {
         console.error('Error:', error);
     }
 }
+
 
 function displayExpenses(expenses) {
     var expensesDiv = document.getElementById('expenses');
@@ -53,7 +56,10 @@ function displayExpenses(expenses) {
 async function deleteExpense(id) {
     try {
         let response = await fetch('/expenses/' + id, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
         });
         if (!response.ok) {
             alert('Error occurred while deleting expense');
@@ -69,7 +75,11 @@ async function deleteExpense(id) {
 // When the page loads, fetch the expenses from the server and display them
 window.onload = async function() {
     try {
-        let response = await fetch('/expenses');
+        let response = await fetch('/expenses', {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        });
         if (!response.ok) {
             alert('Error occurred while fetching expenses');
             console.error('Response status:', response.status);
@@ -81,5 +91,6 @@ window.onload = async function() {
         console.error('Fetch error:', error);
     }
 };
+
 
 
