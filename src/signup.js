@@ -1,4 +1,5 @@
 //signup.js
+
 async function submitForm(e) {
     e.preventDefault(); // Prevent form from being submitted
 
@@ -10,18 +11,16 @@ async function submitForm(e) {
     };
 
     try {
-        // Use fetch to send the form data to the server
-        let response = await fetch('/user/signup', {
-            method: 'POST',
+        // Use axios to send the form data to the server
+        let response = await axios.post('/user/signup', formData, {
             headers: {
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
+            }
         });
 
         console.log(response); // Log the server's response
 
-        let data = await response.json();
+        let data = response.data;
 
         // Clear the form fields after successful submission
         if (data.status === 'success') {
@@ -34,6 +33,9 @@ async function submitForm(e) {
 
 // Attach the submitForm function to the form's submit event
 document.getElementById('signupForm').addEventListener('submit', submitForm);
+
+
+
 
 
 

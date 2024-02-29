@@ -1,4 +1,5 @@
 //expense.js
+
 async function submitExpenseForm(e) {
     e.preventDefault(); // Prevent form from being submitted
 
@@ -10,23 +11,21 @@ async function submitExpenseForm(e) {
     };
 
     try {
-        // Use fetch to send the form data to the server
-        let response = await fetch('/expenses', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
-            },
-            body: JSON.stringify(formData)
+        // Use axios to send the form data to the server
+        let response = await axios({
+            method: 'post',
+            url: '/expenses',
+            data: formData,
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
         });
 
-        if (!response.ok) {
+        if (response.status !== 200) {
             alert('Error occurred while adding expense');
             return;
         }
 
         // If the response is OK, get the updated list of expenses
-        let data = await response.json();
+        let data = response.data;
 
         // Display the expenses on the screen
         displayExpenses(data.expenses);
@@ -35,6 +34,7 @@ async function submitExpenseForm(e) {
         console.error('Error:', error);
     }
 }
+
 
 
 function displayExpenses(expenses) {
@@ -75,22 +75,23 @@ async function deleteExpense(id) {
 // When the page loads, fetch the expenses from the server and display them
 window.onload = async function() {
     try {
-        let response = await fetch('/expenses', {
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
-            }
+        let response = await axios({
+            method: 'get',
+            url: '/expenses',
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
         });
-        if (!response.ok) {
+
+        if (response.status !== 200) {
             alert('Error occurred while fetching expenses');
             console.error('Response status:', response.status);
             return;
         }
-        let data = await response.json();
+
+        let data = response.data;
         displayExpenses(data.expenses);
     } catch (error) {
         console.error('Fetch error:', error);
     }
 };
-
 
 

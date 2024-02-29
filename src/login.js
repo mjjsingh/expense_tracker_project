@@ -1,4 +1,5 @@
 //login.js
+
 async function submitLoginForm(e) {
     e.preventDefault(); // Prevent form from being submitted
 
@@ -9,16 +10,10 @@ async function submitLoginForm(e) {
     };
 
     try {
-        // Use fetch to send the form data to the server
-        let response = await fetch('/user/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        });
+        // Use axios to send the form data to the server
+        let response = await axios.post('/user/login', formData);
 
-        if (!response.ok) {
+        if (response.status !== 200) {
             if (response.status === 401) {
                 alert('User not authorized');
             } else if (response.status === 404) {
@@ -28,8 +23,7 @@ async function submitLoginForm(e) {
         }
 
         // If the response is OK, get the token and store it
-        let data = await response.json();
-        localStorage.setItem('token', data.token);
+        localStorage.setItem('token', response.data.token);
 
         // Redirect to the expenses page
         window.location.href = '/expenses-page';
@@ -41,6 +35,5 @@ async function submitLoginForm(e) {
 
 // Attach the submitLoginForm function to the form's submit event
 document.getElementById('loginForm').addEventListener('submit', submitLoginForm);
-
 
 
