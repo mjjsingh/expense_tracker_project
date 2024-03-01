@@ -6,6 +6,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../db/db.js'); 
 const path = require('path');
+const Razorpay = require('razorpay'); // Add this line
+
 
 const secretKey = process.env.SECRET_KEY;
 
@@ -60,7 +62,8 @@ router.post('/login', async (req, res) => {
                 } else {
                     console.log(`User with email ${email} authenticated successfully.`);
                     const token = jwt.sign({ userID: result[0].id }, secretKey);
-                    res.json({ token });
+                    res.cookie('token', token, { httpOnly: true }); // Set a cookie with the token
+                    res.redirect('/expenses-page'); // Redirect to the expenses page
                 }
             });
         } else {
@@ -69,5 +72,27 @@ router.post('/login', async (req, res) => {
         }
     });
 });
+
+
+router.post('/verify-payment', async (req, res) => {
+    const payment_id = req.body.payment_id;
+
+    const instance = new Razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID,
+        key_secret: process.env.RAZORPAY_KEY_SECRET
+    });
+
+    instance.payments.fetch(payment_id).then(payment => {
+        if (payment.status === 'captured') {
+            res.json({ status: 'success' });
+        } else {
+            res.json({ status: 'error' });
+        }
+    }).catch(err => {
+        console.error(err);
+        res.json({ status: 'error' });
+    });
+});
+
 
 module.exports = router;

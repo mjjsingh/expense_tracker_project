@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily Expenses</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
     <h1>Daily Expenses</h1>
     <form id="expenseForm" method="post" onsubmit="submitExpenseForm(event)">
         <label for="amount">Amount:</label><br>
@@ -22,13 +22,14 @@
         </select><br>
         <input type="submit" value="Submit">
     </form>
-
-    <!-- Add a new div element where you will display the expenses -->
     <div id="expenses"></div>
 
-    <script src="/expense.js"></script> 
+    <!-- Add a button for premium membership -->
+    <div class="premium">
+        <button id="buyPremiumButton">Buy premium</button>
+    </div>
+
+    <script src="/expense.js"></script>
+    <script src="/razorpay.js"></script> <!-- Add this line -->
 </body>
 </html>
-
-
-

@@ -19,6 +19,8 @@ async function submitExpenseForm(e) {
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
         });
 
+        console.log('Response:', response); // Log the response for debugging
+
         if (response.status !== 200) {
             alert('Error occurred while adding expense');
             return;
@@ -32,10 +34,9 @@ async function submitExpenseForm(e) {
         e.target.reset();
     } catch (error) {
         console.error('Error:', error);
+        alert('An error occurred. Please check the console for more details.');
     }
 }
-
-
 
 function displayExpenses(expenses) {
     var expensesDiv = document.getElementById('expenses');
@@ -55,17 +56,18 @@ function displayExpenses(expenses) {
 
 async function deleteExpense(id) {
     try {
-        let response = await fetch('/expenses/' + id, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
-            }
+        let response = await axios({
+            method: 'delete',
+            url: '/expenses/' + id,
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
         });
+
         if (!response.ok) {
             alert('Error occurred while deleting expense');
             return;
         }
-        let data = await response.json();
+
+        let data = await response.data;
         displayExpenses(data.expenses);
     } catch (error) {
         console.error('Error:', error);
@@ -93,5 +95,6 @@ window.onload = async function() {
         console.error('Fetch error:', error);
     }
 };
+
 
 
